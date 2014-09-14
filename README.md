@@ -4,28 +4,134 @@ Checkgen
 This is a AWK script that generate suitable C source code for use with
 the [Check](http://check.sourceforge.net/) unit testing framework.
 
-The syntax mimic preprocessor directives like `checkmk` (included in
+The syntax mimic preprocessor directives like *checkmk* (included in
 Check).
 
-Features
---------
+Supported directives
+--------------------
 
-*TOWRITE*
+* `#suite` Create a suite.
+* `#tcase` Create a test case.
+* `#test` Define a basic test.
+* `#test-exit()` Define a test with expected exit value.
+* `#test-signal()` Define a test with expected raised signal.
+* `#test-loop()` Define a loop test.
+* `#test-loop-exit()` Define a loop test with expected exit value.
+* `#test-loop-signal()` Define a loop test with expected raised signal.
+* `#setup` Define a unchecked fixture setup block.
+* `#teardown` Define a unchecked fixture teardown block.
+* `#checked-setup` Define a checked fixture setup block.
+* `#checked-teardown` Define a checked fixture teardown block.
+* `#global` Permit to define some globals.
+* `#timeout` Set the timeout for tests in the current test case.
+* `#main-pre` Define block of code te be inserted after declarations in the main() function.
+* `#main-post` Define block of code te be inserted before `srunner_run_all()` in the main() function.
+* `#main` Define block of code te be inserted in place in the main() function.
 
-Compatibility with `checkmk`
+Basic example
+-------------
+
+```C
+#suite Checkgen
+#tcase Basics
+
+#test This test should fail
+ck_assert(1 == 0);
+
+#test This test should success
+ck_assert(1 == 1);
+```
+
+Will produce (line sync directives stripped out for readability):
+
+```C
+/*************************************************************/
+/*************************************************************/
+/******* Automatically generated file, DO NOT EDIT. **********/
+/*************************************************************/
+/*************************************************************/
+/* Command line used to generate this file:
+ * checkgen example.basic.ts
+ */
+#include <check.h>
+
+START_TEST(checkgen_test_func0)
+{
+ck_assert(1 == 0);
+
+}
+END_TEST
+START_TEST(checkgen_test_func1)
+{
+ck_assert(1 == 1);
+}
+END_TEST
+int main(int argc, char *argv[])
+{
+Suite *s;
+TCase *tc;
+SRunner *sr;
+sr = srunner_create(NULL);
+int nf;
+s = suite_create("Checkgen");
+srunner_add_suite(sr, s);
+tc = tcase_create("Checkgen/Basics");
+suite_add_tcase(s, tc);
+_tcase_add_test(tc, checkgen_test_func0, "This test should fail", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func1, "This test should success", 0, 0, 0, 1);
+srunner_run_all(sr, CK_ENV);
+nf = srunner_ntests_failed(sr);
+srunner_free(sr);
+return nf == 0 ? 0 : 1;
+}
+```
+
+See `example.full.ts` for a full example.
+
+Compatibility with *checkmk*
 ----------------------------
 
-*TOWRITE*
+The following directives are fully compatible with *checkmk*:
 
-Limitations
------------
+* `#suite`
+* `#tcase`
+* `#test`
+* `#test-exit()`
+* `#test-signal()`
+* `#test-loop()`
+* `#test-loop-exit()`
+* `#test-loop-signal()`
 
-*TOWRITE*
+The following directives behaves as in *checkmk* but the user code can
+be incompatible:
 
-Why not simply using checkmk
-----------------------------
+* `#main-pre`
+* `#main-post`
 
-*TOWRITE*
+The suite and test case variable naming differs in *checkgen*, the
+TCase variable is continuously reused. There is no `tcX_Y` variable
+naming scheme in *checkgen*. So, user code that requires `tcX_Y`
+variables are broken. By the way, new directives permit a cleaner approach.
+
+The following directives are new to *checkgen* and are not supported
+by *checkmk*:
+
+* `#setup`
+* `#teardown`
+* `#checked-setup`
+* `#checked-teardown`
+* `#global`
+* `#timeout`
+* `#main`
+
+Why ?
+-----
+
+*checkmk* do a good job but fixture handling is absent. It can be
+ hacked using `#main-pre` but reordering test cases break user code.
+
+Originally, test naming enforces C identifier. With *checkgen* any
+string can be used to name your test.
 
 Thanks
 ------
