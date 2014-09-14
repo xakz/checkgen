@@ -42,7 +42,13 @@ ck_assert(1 == 0);
 ck_assert(1 == 1);
 ```
 
-Will produce (line sync directives stripped out for readability):
+Typing this command,
+
+```sh
+checkgen example.basic.ts > result.c
+```
+
+will produce (line sync directives stripped out for readability):
 
 ```C
 /*************************************************************/
@@ -86,6 +92,14 @@ return nf == 0 ? 0 : 1;
 }
 ```
 
+Directives syntax
+-----------------
+
+*TODO*
+
+Full example
+------------
+
 See `example.full.ts` for a full example.
 
 Compatibility with *checkmk*
@@ -111,7 +125,7 @@ be incompatible:
 The suite and test case variable naming differs in *checkgen*, the
 TCase variable is continuously reused. There is no `tcX_Y` variable
 naming scheme in *checkgen*. So, user code that requires `tcX_Y`
-variables are broken. By the way, new directives permit a cleaner approach.
+variables are broken. Thus, new directive set permits a cleaner approach.
 
 The following directives are new to *checkgen* and are not supported
 by *checkmk*:
@@ -131,7 +145,7 @@ Why ?
  hacked using `#main-pre` but reordering test cases break user code.
 
 Originally, test naming enforces C identifier. With *checkgen* any
-string can be used to name your test.
+string can be used as name for your test.
 
 Thanks
 ------
