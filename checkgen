@@ -70,7 +70,7 @@ BEGIN {
 	g_line_sync_counter++;
 }
 tolower($0) ~ directive_regex("(suite|tcase|timeout|global|main[-_a-z]*|" \
-			"(checked-)?fixture[-_a-z]*|test[-_a-z]*)") {
+			"(checked-)?setup|(checked-)?teardown|test[-_a-z]*)") {
 	buffer_flush(BUFFER_BLOCK);
 	buffer_set_default();
 }
@@ -131,19 +131,19 @@ tolower($0) ~ directive_regex("main-post") {
 	do_directive_main_post(directive_text($0));
 	next;
 }
-tolower($0) ~ directive_regex("checked-fixture-setup") {
+tolower($0) ~ directive_regex("checked-setup") {
 	do_directive_fixture(1, 1, directive_text($0));
 	next;
 }
-tolower($0) ~ directive_regex("checked-fixture-teardown") {
+tolower($0) ~ directive_regex("checked-teardown") {
 	do_directive_fixture(1, 0, directive_text($0));
 	next;
 }
-tolower($0) ~ directive_regex("fixture-setup") {
+tolower($0) ~ directive_regex("setup") {
 	do_directive_fixture(0, 1, directive_text($0));
 	next;
 }
-tolower($0) ~ directive_regex("fixture-teardown") {
+tolower($0) ~ directive_regex("teardown") {
 	do_directive_fixture(0, 0, directive_text($0));
 	next;
 }
