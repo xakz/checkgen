@@ -1,0 +1,480 @@
+#!/usr/bin/awk -f
+########################################################################
+# The MIT License (MIT)
+#
+# Copyright (c) 2014, Maxime Chatelle, All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+########################################################################
+
+BEGIN {
+	# Constants
+	PROGNAME		= "checkgen";
+	TEST_PREFIX		= "checkgen_test_func";
+	FIXTURE_PREFIX		= "checkgen_fixture_func";
+	DEFAULT_SUITE_NAME	= "Core";
+	DEFAULT_TCASE_NAME	= "Core";
+	BUFFER_MAIN		= "MAIN";
+	BUFFER_MAIN_PRE		= "MAIN_PRE";
+	BUFFER_MAIN_POST	= "MAIN_POST";
+	BUFFER_BLOCK		= "BLOCK";
+	# Disable line sync
+	#NOLINESYNC		= 1;
+
+	# Globals
+	g_test_count = 0;
+	g_fixture_count = 0;
+	g_current_suite = "";
+	g_current_tcase = "";
+	g_line_sync_counter = 0;
+
+	# Generated header
+	print "/*************************************************************/";
+	print "/*************************************************************/";
+	print "/******* Automatically generated file, DO NOT EDIT. **********/";
+	print "/*************************************************************/";
+	print "/*************************************************************/";
+	print "/* Command line used to generate this file:";
+	printf " * %s ", PROGNAME;
+	for (i = 1; i < ARGC; i++) {
+		printf "%s ", ARGV[i];
+	}
+	print "";
+	print " */";
+	print "#include <check.h>";
+}
+
+#################### ACTIONS ####################
+{
+	# if this variable is > 1 => a directive was found.
+	# So, we will need line sync directive at next line
+	# See the ending catch all action.
+	g_line_sync_counter++;
+}
+tolower($0) ~ directive_regex("(suite|tcase|timeout|global|main[-_a-z]*|" \
+			"(checked-)?fixture[-_a-z]*|test[-_a-z]*)") {
+	buffer_flush(BUFFER_BLOCK);
+	buffer_set_default();
+}
+tolower($0) ~ directive_regex("test-loop-signal") {
+	do_directive_test(directive_text($0),				\
+		directive_param(1, $0), 0, directive_param(2, $0),	\
+		directive_param(3, $0));
+	next;
+}
+tolower($0) ~ directive_regex("test-loop-exit") {
+	do_directive_test(directive_text($0), 0,			\
+		directive_param(1, $0), directive_param(2, $0),		\
+		directive_param(3, $0));
+	next;
+}
+tolower($0) ~ directive_regex("test-loop") {
+	do_directive_test(directive_text($0), 0, 0,			\
+		directive_param(1, $0), directive_param(2, $0));
+	next;
+}
+tolower($0) ~ directive_regex("test-signal") {
+	do_directive_test(directive_text($0), directive_param(1, $0), 0, 0, 1);
+	next;
+}
+tolower($0) ~ directive_regex("test-exit") {
+	do_directive_test(directive_text($0), 0, directive_param(1, $0), 0, 1);
+	next;
+}
+tolower($0) ~ directive_regex("test") {
+	do_directive_test(directive_text($0), 0, 0, 0, 1);
+	next;
+}
+tolower($0) ~ directive_regex("suite") {
+	do_directive_suite(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("tcase") {
+	do_directive_tcase(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("timeout") {
+	do_directive_timeout(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("global") {
+	do_directive_global(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("main") {
+	do_directive_main(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("main-pre") {
+	do_directive_main_pre(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("main-post") {
+	do_directive_main_post(directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("checked-fixture-setup") {
+	do_directive_fixture(1, 1, directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("checked-fixture-teardown") {
+	do_directive_fixture(1, 0, directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("fixture-setup") {
+	do_directive_fixture(0, 1, directive_text($0));
+	next;
+}
+tolower($0) ~ directive_regex("fixture-teardown") {
+	do_directive_fixture(0, 0, directive_text($0));
+	next;
+}
+{
+	# sync first line
+	if (FNR == 1) {
+		# flush block buffer from the preceding file
+		buffer_flush(BUFFER_BLOCK);
+		print line_sync();
+	}
+	# Line sync is needed
+	if (g_line_sync_counter > 1) {
+		buffer_append(line_sync());
+	}
+	g_line_sync_counter = 0;
+	# continue appending (can be stdout, see buffer_* functions)
+	buffer_append($0 "\n");
+}
+
+# Generate the main function.
+END {
+	buffer_flush(BUFFER_BLOCK);
+	buffer_set_default();
+	print "int main(int argc, char *argv[])";
+	print "{";
+	print "Suite *s;";
+	print "TCase *tc;";
+	print "SRunner *sr;";
+	print "sr = srunner_create(NULL);";
+	print "int nf;";
+	buffer_flush(BUFFER_MAIN_PRE);
+	buffer_flush(BUFFER_MAIN);
+	buffer_flush(BUFFER_MAIN_POST);
+	print "srunner_run_all(sr, CK_ENV);";
+	print "nf = srunner_ntests_failed(sr);";
+	print "srunner_free(sr);";
+	print "return nf == 0 ? 0 : 1;";
+	print "}";
+}
+
+############################################################
+## Directive functions.
+############################################################
+
+##########
+# Add a suite and register it.
+# @param name		The suite name.
+function do_directive_suite(name) {
+	# Adds code to main buffer.
+	buffer_append(						\
+		line_sync(					\
+			"s = suite_create(\"" name "\");\n"	\
+			"srunner_add_suite(sr, s);\n"		\
+			)					\
+		, BUFFER_MAIN);
+	g_current_suite = name;
+}
+
+##########
+# Add a test case and register it.
+# @param name		The test case name.
+function do_directive_tcase(name) {
+	if (!g_current_suite) {
+		do_directive_suite(DEFAULT_SUITE_NAME);
+	}
+	g_current_tcase = g_current_suite "/" name;
+	# Adds code to main buffer.
+	buffer_append(							\
+		line_sync(						\
+			"tc = tcase_create(\"" g_current_tcase "\");\n"	\
+			"suite_add_tcase(s, tc);\n"			\
+			)						\
+		, BUFFER_MAIN);
+}
+
+
+##########
+# Set a timeout for the current test case.
+# @param timeout	The timeout, in seconds.
+function do_directive_timeout(timeout) {
+	# Adds code to main buffer.
+	buffer_append(							\
+		line_sync("tcase_set_timeout(tc, " timeout ");\n")	\
+		, BUFFER_MAIN);
+}
+
+##########
+# Permit to define some globals
+# @param desc		The optional description (will be commented);
+function do_directive_global(desc) {
+	buffer_append(line_sync("/* User defined code: " desc " */\n"));
+}
+
+##########
+# Following code will be added to the main function.
+# The code is added in place, to add code before or after the generated content
+# in main(), please use #main-pre or #main-post
+# @param desc		The optional description (will be commented).
+function do_directive_main(desc) {
+	buffer_set_default(BUFFER_MAIN);
+	buffer_append(line_sync("/* User code from #main: " desc " */\n"));
+}
+
+##########
+# Following code will be added before the generated content in main().
+# @param desc		The optional description (will be commented).
+function do_directive_main_pre(desc) {
+	buffer_set_default(BUFFER_MAIN_PRE);
+	buffer_append(line_sync("/* User code from #main-pre: " desc " */\n"));
+}
+
+##########
+# Following code will be added after the generated content in main().
+# @param desc		The optional description (will be commented).
+function do_directive_main_post(desc) {
+	buffer_set_default(BUFFER_MAIN_POST);
+	buffer_append(line_sync("/* User code from #main-post: " desc " */\n"));
+}
+
+##########
+# Add a test function and register it.
+# @param desc		Test description.
+# @param signal		Expected signal, `0' for none.
+# @param exit_value	Expected exit value.
+# @param start		Start of a test loop.
+# @param end		End of a test loop.
+function do_directive_test(desc, signal, exit_value, start, end,      name) {
+	if (!g_current_suite) {
+		do_directive_suite(DEFAULT_SUITE_NAME);
+	}
+	if (!g_current_tcase) {
+		do_directive_tcase(DEFAULT_TCASE_NAME);
+	}
+	name = TEST_PREFIX g_test_count;
+	# Adds code to main buffer.
+	buffer_append(							\
+		line_sync(						\
+			"_tcase_add_test(tc, " name ", \"" desc "\", "	\
+			signal ", " exit_value ", " start ", " end ");\n" \
+			)						\
+		, BUFFER_MAIN);
+	# Adds code to block buffer (next directive will flush it).
+	buffer_set_default(BUFFER_BLOCK);
+	buffer_append(					\
+		line_sync(				\
+			"START_TEST(" name ")\n"	\
+			"{\n"				\
+			)				\
+		);
+	buffer_append_ending(					\
+		line_sync("}\n"					\
+			"END_TEST\n"				\
+			)					\
+		);
+	g_test_count++;
+}
+
+##########
+# Add a fixture function and register it.
+# @param ischecked	Boolean defining if it is a checked fixture.
+# @param issetup	Boolean defining if it is a setup function.
+#			(if `0', it is a teardown function).
+function do_directive_fixture(ischecked, issetup, desc,      name) {
+	name = FIXTURE_PREFIX g_fixture_count;
+	# Adds code to main buffer.
+	buffer_append(							\
+		line_sync(						\
+			"tcase_add_"					\
+			(ischecked ? "checked" : "unchecked") "_fixture(tc, " \
+			(issetup ? name : "NULL")			\
+			", "						\
+			(issetup ? "NULL" : name)			\
+			");\n"						\
+			)						\
+		, BUFFER_MAIN);
+	# Adds code to block buffer (next directive will flush it).
+	buffer_set_default(BUFFER_BLOCK);
+	buffer_append(							\
+		line_sync(						\
+			"/* Fixture function for test case \""		\
+			g_current_tcase "\". */\n"			\
+			"/* " desc " */\n"				\
+			"static void " name "()\n"			\
+			"{\n"						\
+			)						\
+		);
+	buffer_append_ending(			\
+		line_sync(			\
+			"}\n"			\
+			)			\
+		);
+	g_fixture_count++;
+}
+
+############################################################
+## Utility functions. Do not modify any buffer nor global.
+############################################################
+
+##########
+# Returns a well formed regex for the directive.
+# @param name		The directive name.
+function directive_regex(name) {
+	return "^[ \t]*#[ \t]*" name "([( \t]+|$)";
+}
+
+##########
+# Returns the text after a directive with whitespaces stripped.
+# Directive parameters are not returned. @see directive_param().
+# @param line		The directive line.
+function directive_text(line) {
+	sub(/^[ \t]*#[ \t]*[-_A-Za-z]+[ \t]*([(][^)]*[)])?[ \t]*/ , "", line);
+	sub(/[ \t]*$/, "", line);
+	return line;
+}
+
+##########
+# Returns the wanted directive parameter.
+# @param wanted		The parameter number (starting at 1).
+# @param line		The directive line.
+function directive_param(wanted, line,        param_total, param_array) {
+	if (!sub(/^[^(]*[(][ \t]*/, "", line)) {
+		error("Parameter list misformed, \"(\" is missing.");
+	}
+	if (!sub(/[ \t]*[)].*$/, "", line)) {
+		error("Parameter list misformed, \")\" is missing.");
+	}
+	param_total = split(line, param_array, /[ \t]*,[ \t]*/);
+	if (param_total < wanted || wanted < 1) {
+		error("Parameter #" wanted " not found.");
+	}
+	return param_array[wanted];
+}
+
+##########
+# Add preprocessor line sync directive.
+# @param lines		The lines to sync with input.
+function line_sync(lines) {
+	if (NOLINESYNC) {
+		return lines;
+	}
+	gsub(/\n/, "\n#line " FNR " \"" FILENAME "\"\n", lines);
+	return "#line " FNR " \"" FILENAME "\"\n" lines;
+}
+
+############################################################
+##                Reusable AWK functions                  ##
+############################################################
+
+#################### Error functions #######################
+## Depends: nothing.
+function error(msg) {
+	warn(msg);
+	exit 1;
+}
+function warn(msg) {
+	print FILENAME ":" FNR ": " msg > "/dev/stderr";
+}
+
+#################### Buffer functions ######################
+## Depends: nothing.
+function buffer_set_default(name) {
+	if (name) {
+		__buffer_default = name;
+	} else {
+		__buffer_default = -1;
+	}
+}
+function buffer_get_default() {
+	if (__buffer_default) {
+		return __buffer_default;
+	}
+	return -1;
+}
+function buffer_append(text, name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	if (name == -1) {
+		printf("%s", text);
+	} else {
+		__buffer_data[name] = __buffer_data[name] text;
+	}
+}
+function buffer_prepend(text, name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	if (name == -1) {
+		return;
+	} else {
+		__buffer_data[name] = text __buffer_data[name];
+	}
+}
+function buffer_get(name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	if (name == -1) {
+		return "";
+	}
+	return __buffer_data[name] __buffer_ending[name];
+}
+function buffer_flush(name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	printf "%s", buffer_get(name);
+	buffer_delete(name);
+}
+function buffer_length(name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	if (name == -1) {
+		return 0;
+	}
+	return length(__buffer_data[name]);
+}
+function buffer_delete(name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	if (name == -1) {
+		return;
+	}
+	delete __buffer_data[name];
+	delete __buffer_ending[name];
+}
+function buffer_append_ending(text, name) {
+	if (!name) {
+		name = buffer_get_default();
+	}
+	__buffer_ending[name] = __buffer_ending[name] text;
+}
