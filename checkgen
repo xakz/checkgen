@@ -176,11 +176,14 @@ END {
 	print "int nf;";
 	buffer_flush(BUFFER_MAIN_PRE);
 	buffer_flush(BUFFER_MAIN);
-	buffer_flush(BUFFER_MAIN_POST);
-	print "srunner_run_all(sr, CK_ENV);";
-	print "nf = srunner_ntests_failed(sr);";
-	print "srunner_free(sr);";
-	print "return nf == 0 ? 0 : 1;";
+	if (buffer_length(BUFFER_MAIN_POST)) {
+		buffer_flush(BUFFER_MAIN_POST);
+	} else {
+		print "srunner_run_all(sr, CK_ENV);";
+		print "nf = srunner_ntests_failed(sr);";
+		print "srunner_free(sr);";
+		print "return nf == 0 ? 0 : 1;";
+	}
 	print "}";
 }
 
