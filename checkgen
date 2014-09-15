@@ -331,6 +331,7 @@ function do_directive_fixture(ischecked, issetup, desc,      name) {
 			"/* " desc " */\n"				\
 			"static void " name "()\n"			\
 			"{\n"						\
+			"mark_point();\n"				\
 			)						\
 		);
 	buffer_append_ending(			\
