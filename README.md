@@ -196,11 +196,6 @@ varaible name is `tc` and the SRunner varaible name is `sr`. The
 optional `DESC` string will be added as comment. This directive can be
 used multiple times, block of code will be appended in order.
 
-Full example
-------------
-
-See `example.full.ts` for a full example.
-
 Compatibility with *checkmk*
 ----------------------------
 
@@ -259,3 +254,288 @@ Thanks
 
 Thanks to the [Check](http://check.sourceforge.net/) team for their
 work.
+
+Full example
+------------
+
+```C
+/* -*- c -*- */
+
+#include <stdlib.h>
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <signal.h>
+
+#suite Checkgen Suite
+#tcase Basic tests
+
+#test This test should fail
+ck_assert(1 == 0);
+
+#test This test should success
+ck_assert(1 == 1);
+
+#test-exit(1) Exit value == 1 is expected
+exit(1);
+
+#test-signal(SIGUSR1) Expect SIGUSR1
+kill(getpid(), SIGUSR1);
+
+#test-loop(0, 10) A loop test that success
+ck_assert(_i >= 0);
+ck_assert(_i < 10);
+
+#test-loop-exit(1, 0, 10) A loop test that should exit(1)
+if (_i == 5)
+	exit(0);
+exit(1);
+
+#test-loop-signal(SIGSEGV, 0, 10) Segfault !
+char *invalid = NULL;
+if (_i == 5) {
+	;			/* Noop */
+}
+invalid[0] = '@';
+
+/* Test case with unchecked fixture */
+#tcase Unckecked Fixtures
+#global Define a global for the fixture
+int *array;
+
+#setup Allocate memory for the array
+array = malloc(10 * sizeof(*array));
+if (array == NULL) {
+	/* Its an unchecked fixture, so, this ends the test
+	 * runner. But memory allocation seldom fails. */
+	exit(1);
+}
+
+#teardown Free memory used by the array
+free(array);
+
+#test An useless test
+array[0] = 20;
+ck_assert_int_eq(array[0], 20);
+
+/* Test case with checked fixture */
+#tcase Checked Fixture
+#global Its time to declare a global
+char *astring = NULL;
+
+#checked-setup A setup fixture function that fail, but tests continue
+astring[0] = '@'; 	/* Oups */
+
+#test Successful test
+ck_assert_ptr_eq(astring, NULL);
+
+/* Auxiliary directives */
+#tcase Auxiliary
+/* Set the tcase timeout to 3 seconds. */
+#timeout 1
+#test A test
+ck_assert(1 == 1);
+
+#main-post Change the main() ending
+srunner_run_all(sr, CK_ENV);
+return number;
+
+#main Change number value
+number = 0;
+
+#test Will timeout
+sleep(3);
+
+#main-pre Declare a variable
+int number = 6;
+
+#test Another test
+ck_assert(1 + 1 == 2);
+
+```
+
+Will produce:
+
+```C
+/*************************************************************/
+/*************************************************************/
+/******* Automatically generated file, DO NOT EDIT. **********/
+/*************************************************************/
+/*************************************************************/
+/* Command line used to generate this file:
+ * checkgen example.full.ts
+ */
+#include <check.h>
+
+/* -*- c -*- */
+
+#include <stdlib.h>
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <signal.h>
+
+
+START_TEST(checkgen_test_func0)
+{
+ck_assert(1 == 0);
+
+}
+END_TEST
+START_TEST(checkgen_test_func1)
+{
+ck_assert(1 == 1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func2)
+{
+exit(1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func3)
+{
+kill(getpid(), SIGUSR1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func4)
+{
+ck_assert(_i >= 0);
+ck_assert(_i < 10);
+
+}
+END_TEST
+START_TEST(checkgen_test_func5)
+{
+if (_i == 5)
+	exit(0);
+exit(1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func6)
+{
+char *invalid = NULL;
+if (_i == 5) {
+	;			/* Noop */
+}
+invalid[0] = '@';
+
+/* Test case with unchecked fixture */
+}
+END_TEST
+/* User defined code: Define a global for the fixture */
+int *array;
+
+/* Fixture function for test case "Checkgen Suite/Unckecked Fixtures". */
+/* Allocate memory for the array */
+static void checkgen_fixture_func0()
+{
+mark_point();
+array = malloc(10 * sizeof(*array));
+if (array == NULL) {
+	/* Its an unchecked fixture, so, this ends the test
+	 * runner. But memory allocation seldom fails. */
+	exit(1);
+}
+
+}
+/* Fixture function for test case "Checkgen Suite/Unckecked Fixtures". */
+/* Free memory used by the array */
+static void checkgen_fixture_func1()
+{
+mark_point();
+free(array);
+
+}
+START_TEST(checkgen_test_func7)
+{
+array[0] = 20;
+ck_assert_int_eq(array[0], 20);
+
+/* Test case with checked fixture */
+}
+END_TEST
+/* User defined code: Its time to declare a global */
+char *astring = NULL;
+
+/* Fixture function for test case "Checkgen Suite/Checked Fixture". */
+/* A setup fixture function that fail, but tests continue */
+static void checkgen_fixture_func2()
+{
+mark_point();
+astring[0] = '@'; 	/* Oups */
+
+}
+START_TEST(checkgen_test_func8)
+{
+ck_assert_ptr_eq(astring, NULL);
+
+/* Auxiliary directives */
+}
+END_TEST
+/* Set the tcase timeout to 3 seconds. */
+START_TEST(checkgen_test_func9)
+{
+ck_assert(1 == 1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func10)
+{
+sleep(3);
+
+}
+END_TEST
+START_TEST(checkgen_test_func11)
+{
+ck_assert(1 + 1 == 2);
+}
+END_TEST
+int main(int argc, char *argv[])
+{
+Suite *s;
+TCase *tc;
+SRunner *sr;
+sr = srunner_create(NULL);
+int nf;
+/* User code from #main-pre: Declare a variable */
+int number = 6;
+
+s = suite_create("Checkgen Suite");
+srunner_add_suite(sr, s);
+tc = tcase_create("Checkgen Suite/Basic tests");
+suite_add_tcase(s, tc);
+_tcase_add_test(tc, checkgen_test_func0, "This test should fail", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func1, "This test should success", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func2, "Exit value == 1 is expected", 0, 1, 0, 1);
+_tcase_add_test(tc, checkgen_test_func3, "Expect SIGUSR1", SIGUSR1, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func4, "A loop test that success", 0, 0, 0, 10);
+_tcase_add_test(tc, checkgen_test_func5, "A loop test that should exit(1)", 0, 1, 0, 10);
+_tcase_add_test(tc, checkgen_test_func6, "Segfault !", SIGSEGV, 0, 0, 10);
+tc = tcase_create("Checkgen Suite/Unckecked Fixtures");
+suite_add_tcase(s, tc);
+tcase_add_unchecked_fixture(tc, checkgen_fixture_func0, NULL);
+tcase_add_unchecked_fixture(tc, NULL, checkgen_fixture_func1);
+_tcase_add_test(tc, checkgen_test_func7, "An useless test", 0, 0, 0, 1);
+tc = tcase_create("Checkgen Suite/Checked Fixture");
+suite_add_tcase(s, tc);
+tcase_add_checked_fixture(tc, checkgen_fixture_func2, NULL);
+_tcase_add_test(tc, checkgen_test_func8, "Successful test", 0, 0, 0, 1);
+tc = tcase_create("Checkgen Suite/Auxiliary");
+suite_add_tcase(s, tc);
+tcase_set_timeout(tc, 1);
+_tcase_add_test(tc, checkgen_test_func9, "A test", 0, 0, 0, 1);
+/* User code from #main: Change number value */
+number = 0;
+
+_tcase_add_test(tc, checkgen_test_func10, "Will timeout", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func11, "Another test", 0, 0, 0, 1);
+/* User code from #main-post: Change the main() ending */
+srunner_run_all(sr, CK_ENV);
+return number;
+
+}
+```
