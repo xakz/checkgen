@@ -95,7 +95,104 @@ return nf == 0 ? 0 : 1;
 Directives syntax
 -----------------
 
-*TODO*
+`#suite NAME`
+
+Creates a suite with the name `NAME` and adds it to the
+SRunner. `NAME` can be any string.
+
+`#tcase NAME`
+
+Creates a test case with the name `NAME` and registers it to the
+current TCase. `NAME` can be any string.
+
+`#test DESC`
+
+Define a test function block and registers it to the current test
+case. The block finishes at the next directive or at the end of
+file. `DESC` can be any string.
+
+`#test-exit(EXIT_VALUE) DESC`
+
+Same as `#test`, plus, `EXIT_VALUE` is the expected exit value.
+
+`#test-signal(SIGNUM) DESC`
+
+Same as `#test`, plus, `SIGNUM` is the expected signal number (You can
+include signal.h and use SIGXXX defines).
+
+`#test-loop(START, END) DESC`
+
+Define a loop test function block and registers it to the current test
+case. The block finishes at the next directive or at the end of
+file. `DESC` can be any string. `START` and `END` are respectively the
+start and end value defining the loop iterations. The variable `_i` is
+available during each iteration of the test.
+
+`#test-loop-exit(EXIT_VALUE, START, END) DESC`
+
+Its the combinaison of `#test-loop` and `#test-exit`.
+
+`#test-loop-signal(SIGNUM, START, END) DESC`
+
+Its the combinaison of `#test-loop` and `#test-signal`.
+
+`#setup [DESC]`
+
+Define a unchecked fixture setup function block and registers it to
+the current test case. The block finishes at the next directive or at
+the end of file. `DESC` is an optional description that will appear as
+comment.
+
+`#teardown [DESC]`
+
+Define a unchecked fixture teardown function block and registers it to
+the current test case. The block finishes at the next directive or at
+the end of file. `DESC` is an optional description that will appear as
+comment.
+
+`#checked-setup [DESC]`
+
+Same as `#setup` but define a checked fixture setup function block.
+
+`#checked-teardown [DESC]`
+
+Same as `#setup` but define a checked fixture teardown function block.
+
+`#global [DESC]`
+
+Permit to close code block opened by test or fixture directive. So,
+globals can be defined after this directive. The optional `DESC`
+string will be added as comment.
+
+`#timeout T`
+
+Set the timeout for tests in the current test case to `T` seconds.
+
+`#main-pre [DESC]`
+
+Define block of code to be inserted after variable declarations in the
+main() function. The optional `DESC` string will be added as
+comment. This directive can be used multiple times, block of code will
+be appended in order. The main purpose of this directive is to declare
+your own variables if you use a non-C99 compiler that requires
+variable declarations at the top of functions.
+
+`#main-post [DESC]`
+
+Define block of code that *replaces* the end of the main()
+function. The optional `DESC` string will be added as comment. If you
+use `#main-post`, the SRunner will *NOT* be run, you should provide
+your own piece of code to do that. The variable name of the SRunner is
+`sr`. This directive can be used multiple times, block of code will be
+appended in order.
+
+`#main [DESC]`
+
+Define block of code te be inserted in place in the main()
+function. The current Suite varaible name is `s`, the current TCase
+varaible name is `tc` and the SRunner varaible name is `sr`. The
+optional `DESC` string will be added as comment. This directive can be
+used multiple times, block of code will be appended in order.
 
 Full example
 ------------
@@ -116,6 +213,9 @@ The following directives are fully compatible with *checkmk*:
 * `#test-loop-exit()`
 * `#test-loop-signal()`
 
+But, as *checkgen* supports any string as test description, test file
+written for *checkgen* can be incompatible with *checkmk*.
+
 The following directives behaves as in *checkmk* but the user code can
 be incompatible:
 
@@ -125,7 +225,12 @@ be incompatible:
 The suite and test case variable naming differs in *checkgen*, the
 TCase variable is continuously reused. There is no `tcX_Y` variable
 naming scheme in *checkgen*. So, user code that requires `tcX_Y`
-variables are broken. Thus, new directive set permits a cleaner approach.
+variables are broken. That said, new directive set permits a cleaner approach.
+
+In *checkgen*, the `#main-post` directive *replaces* final block of
+code in the main() function. This is intended for a full flexibility
+with the SRunner object (e.g. Setting up log file, xml log file, tap
+file, argv parsing, or any other action).
 
 The following directives are new to *checkgen* and are not supported
 by *checkmk*:
