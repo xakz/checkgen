@@ -28,10 +28,22 @@ prefix	:= /usr/local
 bindir	:= $(prefix)/bin
 DESTDIR	:=
 
+CFLAGS	:= $(shell pkg-config --cflags check)
+LDLIBS	:= $(shell pkg-config --libs check)
+
 all:
 	@echo "Nothing to build, type make install [prefix=...]"
 	@echo "prefix default is $(prefix)"
 install: checkgen
 	install -m755 -t $(DESTDIR)$(bindir) checkgen
 
-.PHONY: all install
+examples: example.basic example.full
+%.c: %.ts
+	./checkgen $< > $@
+
+clean:
+	rm -f example.basic.c example.full.c
+	rm -f example.basic.o example.full.o
+	rm -f example.basic example.full
+
+.PHONY: all install examples clean
