@@ -97,17 +97,19 @@ Directives syntax
 
 `#suite NAME`
 
-Creates a suite with the name `NAME` and adds it to the
-SRunner. `NAME` can be any string.
+Defines a suite with the name `NAME` and adds it to the
+SRunner. `NAME` can be any string. If no suite is defined, a default
+one with the name "Core" will be defined for you.
 
 `#tcase NAME`
 
-Creates a test case with the name `NAME` and registers it to the
-current TCase. `NAME` can be any string.
+Defines a test case with the name `NAME` and registers it to the
+current TCase. `NAME` can be any string. If no test case is defined, a
+default one with the name "Core" will be defined for you.
 
 `#test DESC`
 
-Define a test function block and registers it to the current test
+Defines a test function block and registers it to the current test
 case. The block finishes at the next directive or at the end of
 file. `DESC` can be any string.
 
@@ -122,7 +124,7 @@ include signal.h and use SIGXXX defines).
 
 `#test-loop(START, END) DESC`
 
-Define a loop test function block and registers it to the current test
+Defines a loop test function block and registers it to the current test
 case. The block finishes at the next directive or at the end of
 file. `DESC` can be any string. `START` and `END` are respectively the
 start and end value defining the loop iterations. The variable `_i` is
@@ -138,14 +140,14 @@ Its the combinaison of `#test-loop` and `#test-signal`.
 
 `#setup [DESC]`
 
-Define a unchecked fixture setup function block and registers it to
+Defines a unchecked fixture setup function block and registers it to
 the current test case. The block finishes at the next directive or at
 the end of file. `DESC` is an optional description that will appear as
 comment.
 
 `#teardown [DESC]`
 
-Define a unchecked fixture teardown function block and registers it to
+Defines a unchecked fixture teardown function block and registers it to
 the current test case. The block finishes at the next directive or at
 the end of file. `DESC` is an optional description that will appear as
 comment.
@@ -160,7 +162,7 @@ Same as `#setup` but define a checked fixture teardown function block.
 
 `#global [DESC]`
 
-Permit to close code block opened by test or fixture directive. So,
+Permits to close code block opened by test or fixture directive. So,
 globals can be defined after this directive. The optional `DESC`
 string will be added as comment.
 
@@ -170,7 +172,7 @@ Set the timeout for tests in the current test case to `T` seconds.
 
 `#main-pre [DESC]`
 
-Define block of code to be inserted after variable declarations in the
+Defines block of code to be inserted after variable declarations in the
 main() function. The optional `DESC` string will be added as
 comment. This directive can be used multiple times, block of code will
 be appended in order. The main purpose of this directive is to declare
@@ -179,7 +181,7 @@ variable declarations at the top of functions.
 
 `#main-post [DESC]`
 
-Define block of code that *replaces* the end of the main()
+Defines block of code that *replaces* the end of the main()
 function. The optional `DESC` string will be added as comment. If you
 use `#main-post`, the SRunner will *NOT* be run, you should provide
 your own piece of code to do that. The variable name of the SRunner is
@@ -188,7 +190,7 @@ appended in order.
 
 `#main [DESC]`
 
-Define block of code te be inserted in place in the main()
+Defines block of code te be inserted in place in the main()
 function. The current Suite varaible name is `s`, the current TCase
 varaible name is `tc` and the SRunner varaible name is `sr`. The
 optional `DESC` string will be added as comment. This directive can be
