@@ -8,7 +8,7 @@ The syntax mimic C-like preprocessor directives like does *checkmk*
 (included in Check).
 
 See
-[manpage](https://github.com/xakz/checkgen/raw/master/checkgen.html)
+[manpage](http://htmlpreview.github.io/?https://github.com/xakz/checkgen/blob/master/checkgen.html)
 for the complete documentation.
 
 Supported directives
