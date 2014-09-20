@@ -1,6 +1,2 @@
-/example.basic.c
-/example.full.c
-/example.basic.o
-/example.full.o
-/example.basic
-/example.full
+/example.*
+!/example.*.ts
