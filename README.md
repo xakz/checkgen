@@ -11,6 +11,25 @@ See
 [manpage](http://htmlpreview.github.io/?https://github.com/xakz/checkgen/blob/master/checkgen.html)
 for the complete documentation.
 
+Installation and test
+---------------------
+
+The included examples can be build by typing:
+```sh
+make
+```
+
+And installation can be done by typing:
+```sh
+sudo make install
+```
+or
+```sh
+sudo make install prefix=/your/prefix
+```
+
+`make uninstall` is supported too.
+
 Supported directives
 --------------------
 
