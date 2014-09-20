@@ -172,9 +172,9 @@ END {
 	print "Suite *s;";
 	print "TCase *tc;";
 	print "SRunner *sr;";
-	print "sr = srunner_create(NULL);";
 	print "int nf;";
 	buffer_flush(BUFFER_MAIN_PRE);
+	print "sr = srunner_create(NULL);";
 	buffer_flush(BUFFER_MAIN);
 	if (buffer_length(BUFFER_MAIN_POST)) {
 		buffer_flush(BUFFER_MAIN_POST);
