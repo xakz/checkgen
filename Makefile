@@ -24,15 +24,19 @@
 # SOFTWARE.
 ########################################################################
 
+PROGNAME	:= checkgen
+
 prefix		:= /usr/local
 bindir		:= $(prefix)/bin
-mandir		:= $(prefix)/share/man
+datarootdir	:= $(prefix)/share
+mandir		:= $(datarootdir)/man
+docdir		:= $(datarootdir)/doc/$(PROGNAME)
+exampledir	:= $(docdir)/examples
 DESTDIR		:=
 
 CFLAGS		:= $(shell pkg-config --cflags check)
 LDLIBS		:= $(shell pkg-config --libs check)
 
-PROGNAME	:= checkgen
 MANSECTION	:= 1
 DOCBOOKXML	:= $(PROGNAME).xml
 MANPAGE		:= $(PROGNAME).$(MANSECTION)
@@ -53,14 +57,19 @@ EX_EXES		:= $(EXAMPLES:.ts=)
 
 all: examples
 
-install: $(PROGNAME) $(MANPAGE)
+install: $(PROGNAME) $(MANPAGE) $(EXAMPLES) $(EX_CLEANS) README.md COPYING
 	mkdir -p $(DESTDIR)$(bindir)
 	install -m755 -t $(DESTDIR)$(bindir) $(PROGNAME)
 	mkdir -p $(DESTDIR)$(mandir)/man$(MANSECTION)
 	install -m644 -t $(DESTDIR)$(mandir)/man$(MANSECTION) $(MANPAGE)
+	mkdir -p $(docdir)
+	install -m644 -t $(docdir) README.md COPYING
+	mkdir -p $(exampledir)
+	install -m644 -t $(exampledir) $(EXAMPLES) $(EX_CLEANS)
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/$(PROGNAME)
 	rm -f $(DESTDIR)$(mandir)/man$(MANSECTION)/$(MANPAGE)
+	rm -rf $(exampledir) $(docdir)
 examples: $(EX_EXES) $(EX_CLEANS)
 %.c: %.ts
 	./$(PROGNAME) $< > $@
