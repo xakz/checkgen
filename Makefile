@@ -54,9 +54,9 @@ EX_EXES		:= $(EXAMPLES:.ts=)
 all: examples
 
 install: $(PROGNAME) $(MANPAGE)
-	install -m755 -d $(DESTDIR)$(bindir)
+	mkdir -p $(DESTDIR)$(bindir)
 	install -m755 -t $(DESTDIR)$(bindir) $(PROGNAME)
-	install -m755 -d $(DESTDIR)$(mandir)/man$(MANSECTION)
+	mkdir -p $(DESTDIR)$(mandir)/man$(MANSECTION)
 	install -m644 -t $(DESTDIR)$(mandir)/man$(MANSECTION) $(MANPAGE)
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/$(PROGNAME)
