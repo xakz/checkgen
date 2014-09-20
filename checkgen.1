@@ -348,7 +348,6 @@ if (_i == 5) {
 }
 invalid[0] = \*(Aq@\*(Aq;
 
-/* Test case with unchecked fixture */
 #tcase Unckecked Fixtures
 #global Define a global for the fixture
 int *array;
@@ -368,7 +367,6 @@ free(array);
 array[0] = 20;
 ck_assert_int_eq(array[0], 20);
 
-/* Test case with checked fixture */
 #tcase Checked Fixture
 #global Its time to declare a global
 char *astring = NULL;
@@ -379,9 +377,7 @@ astring[0] = \*(Aq@\*(Aq; 	/* Oups */
 #test Successful test
 ck_assert_ptr_eq(astring, NULL);
 
-/* Auxiliary directives */
 #tcase Auxiliary
-/* Set the tcase timeout to 3 seconds\&. */
 #timeout 1
 #test A test
 ck_assert(1 == 1);
@@ -490,7 +486,6 @@ if (_i == 5) {
 }
 invalid[0] = \*(Aq@\*(Aq;
 
-/* Test case with unchecked fixture */
 }
 END_TEST
 /* User defined code: Define a global for the fixture */
@@ -522,7 +517,6 @@ START_TEST(checkgen_test_func7)
 array[0] = 20;
 ck_assert_int_eq(array[0], 20);
 
-/* Test case with checked fixture */
 }
 END_TEST
 /* User defined code: Its time to declare a global */
@@ -540,10 +534,8 @@ START_TEST(checkgen_test_func8)
 {
 ck_assert_ptr_eq(astring, NULL);
 
-/* Auxiliary directives */
 }
 END_TEST
-/* Set the tcase timeout to 3 seconds\&. */
 START_TEST(checkgen_test_func9)
 {
 ck_assert(1 == 1);
