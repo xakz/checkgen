@@ -1,0 +1,925 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>checkgen</title><style type="text/css">
+/*
+ * Copyright (c) 2001, 2003, 2010 The FreeBSD Documentation Project
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * $FreeBSD$
+ */
+
+/*
+ * General DocBook styles from the DocBook XSL distribution
+ */
+
+.formalpara-title {
+  font-weight: bold;
+}
+
+a:link {
+	color:#0645AD;
+	text-decoration: underline;
+}
+
+a:visited, a:hover, a:active {
+	color:#663366;
+	text-decoration: underline;
+}
+
+div.blockquote-title {
+  font-weight: bold;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+span.msgmain-title {
+  font-weight: bold;
+}
+
+span.msgsub-title {
+  font-weight: bold;
+}
+
+span.msgrel-title {
+  font-weight: bold;
+}
+
+div.msglevel, div.msgorig, div.msgaud {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+span.msglevel-title, span.msgorig-title, span.msgaud-title {
+  font-weight: bold;
+}
+
+div.msgexplan {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+span.msgexplan-title {
+  font-weight: bold;
+}
+
+div.figure-title {
+  font-weight: bold;
+}
+
+div.example-title {
+  font-weight: bold;
+}
+
+div.equation-title {
+  font-weight: bold;
+}
+
+div.table-title {
+  font-weight: bold;
+}
+
+div.sidebar-title {
+  font-weight: bold;
+}
+
+div.synopsis {
+  white-space: pre;
+  font-family: monospace;
+}
+
+/*
+ * FreeBSD-specific formatting
+ */
+
+body address {
+	line-height: 1.3;
+	margin: .6em 0;
+}
+
+html body {
+	margin: 1em 8% 1em 10%;
+	line-height: 1.2;
+}
+
+@media screen {
+	html body { font-family: sans-serif; }
+}
+
+@media print {
+	html body { font-family: serif; }
+}
+
+.legalnotice {
+	font-size: small;
+	font-variant: small-caps;
+}
+
+body div {
+	margin: 0;
+}
+
+dl {
+	margin: .4em 0 0 0;
+	line-height: 1.2;
+}
+
+dt {
+	font-weight: bold;
+	margin: 0.4em 0 0 0;
+}
+
+div.abstract div.abstract-title,
+div.toc div.toc-title,
+div.list-of-figures div.toc-title,
+div.list-of-tables div.toc-title,
+div.list-of-examples div.toc-title {
+	font-size: 115%;
+}
+
+div.calloutlist dt {
+	float: left;
+	width: 1em;}
+
+div.calloutlist dd {
+	clear: right;
+	margin-bottom: 1ex;
+}
+
+body .calloutlist td {
+	padding-right: 0.5em;
+	width: auto;
+}
+
+body .calloutlist td p {
+	line-height: 1.2;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
+body form {
+	margin: .6em 0;
+}
+
+div.example p b,
+.question,
+div.table p b,
+div.procedure p b {
+	color: #990000;
+}
+
+h1.title, h2.title, h3.title, h4.title, h5.title, h6.title,
+h3.author, .corpauthor,
+div.abstract div.abstract-title,
+div.toc div.toc-title,
+div.list-of-figures div.toc-title,
+div.list-of-tables div.toc-title,
+div.list-of-examples div.toc-title {
+	font-weight: bold;
+	line-height: 1.3;
+	margin-top: 1em;
+	margin-left: 0;
+	color: #990000;
+}
+
+h1.title, h2.title {
+	margin: .8em 0 0 -4%;
+}
+
+h3.title, h4.title {
+	margin: .8em 0 0 -3%;
+}
+
+h5.title {
+	margin: .8em 0 0 -2%;
+}
+
+h6.title {
+	margin: .8em 0 0 -1%;
+}
+
+body hr {
+	margin: .6em;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-color: #cecece;
+}
+
+body img.navheader {
+	margin: 0 0 0 -4%;
+}
+
+ol {
+	margin: 0 0 0 1em;
+	line-height: 1.2;
+}
+
+body pre {
+	margin: .75em 0;
+	font-family: monospace;
+}
+
+body td, body th {
+	line-height: 1.2;
+	padding-right: 1.5em;
+}
+
+ul, body dir, body menu {
+	margin: 0 0 0 1em;
+	line-height: 1.2;
+}
+
+html {
+	margin: 0;
+	padding: 0;
+}
+
+.filename {
+	color: #007a00;
+}
+
+.package, .port {
+  color: #007a00;
+  font-family: monospace;
+  font-style: italic;
+}
+
+.svnref {
+	color: #007a00;
+}
+
+.guimenu, .guimenuitem, .guisubmenu,
+.guilabel, .interface,
+.shortcut, .shortcut .keycap {
+	font-weight: bold;
+}
+
+.guibutton {
+	background-color: #CFCFCF;
+	padding: 2px;
+}
+
+.accel {
+	background-color: #F0F0F0;
+	text-decoration: underline;
+}
+
+pre.screen {
+	white-space: pre;
+	overflow: auto;
+	font-family: monospace;
+	padding: 1ex;
+	background-color: #edc;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+pre.programlisting {
+	white-space: pre;
+	overflow: auto;
+	font-family: monospace;
+	padding: 1ex;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+@media screen {  /* hide from IE3 */
+	a[href]:hover { background: #ffa }
+}
+
+.informaltable, .table th {
+	padding-left: 0.2em;
+	text-align: left;
+}
+
+.note, .tip, .important, .warning, .caution, .example, div.procedure {
+	border-radius: 4px;
+	padding: 2ex 2ex 0 2ex;
+	margin: .75em 3em .75em 1em;
+        line-height: 1.3;
+}
+
+.note, div.procedure {
+	color: #222;
+	background: #eee;
+	border: 1px solid #ccc;
+	width: 90%;
+}
+
+.tip {
+	color: #004F00;
+	background: #d8ecd6;
+	border: 1px solid green;
+	width: 90%;
+}
+
+.important {
+	font-style:italic;
+	border: 1px solid #a00;
+	border-left: 12px solid #c00;
+	width: 90%;
+}
+
+.warning {
+	color: #9F1313;
+	background: #f8e8e8;
+	border: 1px solid #e59595;
+	width: 90%;
+}
+
+.caution {
+	color: #3E3535;
+	background: #FFC;
+	border: 1px solid #e59595;
+	width: 90%;
+}
+
+.example {
+	background: #fefde6;
+	border: 1px solid #f1bb16;
+	width: 90%;
+}
+
+.admontitle {
+	display: inline;
+	line-height: 1;
+	margin-right: 0;
+}
+
+.procedure-title {
+	font-weight: bold;
+        line-height: 1;
+        margin-right: 0;
+}
+
+.note p, .tip p, .important p, .warning p, .caution p, {
+	display: inline;
+}
+
+.informaltable table.calstable tr td {
+        padding-left: 1em;
+        padding-right: 1em;
+}
+
+.authorgroup {
+	font-style: italic;
+}
+
+.userinput,
+.userinput code {
+	font-weight: bold;
+}
+
+pre.screen strong {
+	font-weight: normal;
+}
+
+.procedure ol {
+	line-height: 1.2;
+	margin: 0 0 0 -1em;
+}
+
+span.contrib {
+	font-size: small;
+	font-style: italic;
+}
+</style><meta name="generator" content="DocBook XSL-NS Stylesheets V1.76.1"/></head><body><div xml:lang="en" class="article" title="checkgen"><div class="titlepage"><div><div><h2 class="title"><a id="idm52387328"/>checkgen</h2></div></div><hr/></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="refentrytitle"><a href="#idp17520">checkgen</a></span><span class="refpurpose"> — 
+	Test runner generator suitable for use with the Check unit
+	testing framework (<a class="link" href="http://check.sourceforge.net/">http://check.sourceforge.net/</a>).
+      </span></dt></dl></div><div class="refentry" title="checkgen"><a id="idp17520"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>checkgen — 
+	Test runner generator suitable for use with the Check unit
+	testing framework (<a class="link" href="http://check.sourceforge.net/">http://check.sourceforge.net/</a>).
+      <strong>UNIX/Linux</strong></p></div><div class="refsynopsisdiv" title="Synopsis"><h2>Synopsis</h2><div class="cmdsynopsis"><p><code class="command">checkgen</code>  [<code class="option">NOLINESYNC=<em class="replaceable"><code>1</code></em></code>]  <em class="replaceable"><code>FILES</code></em>... </p></div></div><div class="refsect1" title="Description"><a id="idp77216"/><h2>Description</h2><p>
+	<span class="command"><strong>checkgen</strong></span> can generate a test runner C
+	source file from <em class="replaceable"><code>FILES</code></em>. This
+	generated file is ready for compiling and then linking against
+	the Check unit testing framework (<a class="link" href="http://check.sourceforge.net/">http://check.sourceforge.net/</a>).
+      </p><p>
+	The user can configure the file generation using a set
+	of C-like preprocessor directives. See DIRECTIVES.
+      </p><p>
+	Generated file contains all <span class="emphasis"><em>test</em></span> and
+	<span class="emphasis"><em>fixture</em></span> function definitions followed by a
+	generated <code class="function">main()</code> containing Check function
+	calls permitting to register these test or fixture
+	functions. The <code class="function">main()</code> also contains
+	<span class="emphasis"><em>suite</em></span> or <span class="emphasis"><em>test case</em></span>
+	creation and registration. Other usefull things can also be
+	generated using directives. See DIRECTIVES.
+      </p></div><div class="refsect1" title="Options"><a id="idp83456"/><h2>Options</h2><div class="variablelist"><dl><dt><span class="term">
+	    <code class="option">NOLINESYNC=<em class="replaceable"><code>FLAG</code></em></code>
+	  </span></dt><dd><p>
+	      This flag permit to disable line sync directives (#line XX
+	      "filename"). If <em class="replaceable"><code>FLAG</code></em> is
+	      <span class="emphasis"><em>1</em></span>, line sync are disabled. If
+	      <em class="replaceable"><code>FLAG</code></em> is <span class="emphasis"><em>0</em></span>,
+	      line sync are enabled (default behavior).
+	    </p><p>
+	      The use of this option is discouraged. Line sync are
+	      usefull for compilator messages and/or debuggers. This
+	      option exists mainly to generate readable examples and
+	      testing of checkgen itself.
+	    </p></dd></dl></div></div><div class="refsect1" title="Directives"><a id="idp89648"/><h2>Directives</h2><div class="variablelist"><dl><dt><span class="term">
+	    <code class="function">#suite</code> <em class="replaceable"><code>NAME</code></em>
+	  </span></dt><dd><p>
+	      Defines a suite with the name
+	      <em class="replaceable"><code>NAME</code></em> and adds it to the
+	      SRunner. <em class="replaceable"><code>NAME</code></em> can be any
+	      string. If no suite is defined, a default one with the
+	      name "Core" will be defined for you.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#tcase</code> <em class="replaceable"><code>NAME</code></em>
+	  </span></dt><dd><p>
+	      Defines a test case with the name
+	      <em class="replaceable"><code>NAME</code></em> and registers it to the
+	      current TCase. <em class="replaceable"><code>NAME</code></em> can be any
+	      string. If no test case is defined, a default one with the
+	      name "Core" will be defined for you.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#test</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines a test function block and registers it to the
+	      current test case. The block finishes at the next
+	      directive or at the end of
+	      file. <em class="replaceable"><code>DESC</code></em> can be any string.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#test-exit</code>(<em class="replaceable"><code>EXIT_VALUE</code></em>)
+	    <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Same as <code class="function">#test</code>, plus,
+	      <em class="replaceable"><code>EXIT_VALUE</code></em> is the expected exit
+	      value.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#test-signal</code>(<em class="replaceable"><code>SIGNUM</code></em>)
+	    <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Same as <code class="function">#test</code>, plus,
+	      <em class="replaceable"><code>SIGNUM</code></em> is the expected signal
+	      number (You can include signal.h and use SIGXXX defines).
+	    </p></dd><dt><span class="term">
+	    <code class="function">#test-loop</code>(<em class="replaceable"><code>START</code></em>,
+	    <em class="replaceable"><code>END</code></em>) <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines a loop test function block and registers it to
+	      the current test case. The block finishes at the next
+	      directive or at the end of
+	      file. <em class="replaceable"><code>DESC</code></em> can be any
+	      string. <em class="replaceable"><code>START</code></em> and
+	      <em class="replaceable"><code>END</code></em> are respectively the
+	      start and end value defining the loop iterations. The
+	      variable <span class="emphasis"><em>_i</em></span> is available
+	      during each iteration of the test.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#test-loop-exit</code>(<em class="replaceable"><code>EXIT_VALUE</code></em>,
+	    <em class="replaceable"><code>START</code></em>,
+	    <em class="replaceable"><code>END</code></em>) <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Its the combinaison of <code class="function">#test-loop</code> and
+	      <code class="function">#test-exit</code>.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#test-loop-signal</code>(<em class="replaceable"><code>SIGNUM</code></em>,
+	    <em class="replaceable"><code>START</code></em>,
+	    <em class="replaceable"><code>END</code></em>) <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Its the combinaison of <code class="function">#test-loop</code> and
+	      <code class="function">#test-signal</code>.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#setup</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines a unchecked fixture setup function block and
+	      registers it to the current test case. The block
+	      finishes at the next directive or at the end of
+	      file. <em class="replaceable"><code>DESC</code></em> is an optional
+	      description that will appear as comment.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#teardown</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines a unchecked fixture teardown function block and
+	      registers it to the current test case. The block
+	      finishes at the next directive or at the end of
+	      file. <em class="replaceable"><code>DESC</code></em> is an optional
+	      description that will appear as comment.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#checked-setup</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Same as <code class="function">#setup</code> but define a checked
+	      fixture setup function block.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#checked-teardown</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Same as <code class="function">#teardown</code> but define a
+	      checked fixture teardown function block.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#global</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Permits to close code block opened by test or fixture
+	      directive. So, globals can be defined after this
+	      directive. The optional <em class="replaceable"><code>DESC</code></em>
+	      string will be added as comment.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#timeout</code> <em class="replaceable"><code>TIME</code></em>
+	  </span></dt><dd><p>
+	      Set the timeout for tests in the current test case to
+	      <em class="replaceable"><code>TIME</code></em> seconds.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#main-pre</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines block of code to be inserted after variable
+	      declarations in the <code class="function">main()</code>
+	      function. The optional <em class="replaceable"><code>DESC</code></em>
+	      string will be added as comment. This directive can be
+	      used multiple times, block of code will be appended in
+	      order. The main purpose of this directive is to declare
+	      your own variables if you use a non-C99 compiler that
+	      requires variable declarations at the top of functions.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#main-post</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines block of code that *replaces* the end of the
+	      <code class="function">main()</code> function. The optional
+	      <em class="replaceable"><code>DESC</code></em> string will be added as
+	      comment. If you use <code class="function">#main-post</code>, the
+	      SRunner will *NOT* be run, you should provide your own
+	      piece of code to do that. The variable name of the
+	      SRunner is <span class="emphasis"><em>sr</em></span>. This directive
+	      can be used multiple times, block of code will be
+	      appended in order.
+	    </p></dd><dt><span class="term">
+	    <code class="function">#main</code> <em class="replaceable"><code>DESC</code></em>
+	  </span></dt><dd><p>
+	      Defines block of code te be inserted in place in the
+	      <code class="function">main()</code> function. The current Suite
+	      variable name is <span class="emphasis"><em>s</em></span>, the current
+	      TCase varaible name is <span class="emphasis"><em>tc</em></span> and the
+	      SRunner varaible name is <span class="emphasis"><em>sr</em></span>. The
+	      optional <em class="replaceable"><code>DESC</code></em> string will be
+	      added as comment. This directive can be used multiple
+	      times, block of code will be appended in order.
+	    </p></dd></dl></div></div><div class="refsect1" title="Basic Example"><a id="idp154336"/><h2>Basic Example</h2><p>
+	A simple example with only some tests.
+      </p><pre class="programlisting">/* -*- c -*- */
+
+#suite Checkgen
+#tcase Basics
+
+#test This test should fail
+ck_assert(1 == 0);
+
+#test This test should success
+ck_assert(1 == 1);
+</pre><p>
+	The command
+      </p><pre class="programlisting">checkgen example.basic.ts</pre><p>
+	will produce (line sync are stripped out for readability):
+      </p><pre class="programlisting">/*************************************************************/
+/*************************************************************/
+/******* Automatically generated file, DO NOT EDIT. **********/
+/*************************************************************/
+/*************************************************************/
+/* Command line used to generate this file:
+ * checkgen NOLINESYNC=1 example.basic.ts 
+ */
+#include &lt;check.h&gt;
+
+/* -*- c -*- */
+
+
+START_TEST(checkgen_test_func0)
+{
+ck_assert(1 == 0);
+
+}
+END_TEST
+START_TEST(checkgen_test_func1)
+{
+ck_assert(1 == 1);
+}
+END_TEST
+int main(int argc, char *argv[])
+{
+Suite *s;
+TCase *tc;
+SRunner *sr;
+int nf;
+sr = srunner_create(NULL);
+s = suite_create("Checkgen");
+srunner_add_suite(sr, s);
+tc = tcase_create("Checkgen/Basics");
+suite_add_tcase(s, tc);
+_tcase_add_test(tc, checkgen_test_func0, "This test should fail", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func1, "This test should success", 0, 0, 0, 1);
+srunner_run_all(sr, CK_ENV);
+nf = srunner_ntests_failed(sr);
+srunner_free(sr);
+return nf == 0 ? 0 : 1;
+}
+</pre></div><div class="refsect1" title="Full Example"><a id="idp160208"/><h2>Full Example</h2><p>
+	An almost complete example.
+      </p><pre class="programlisting">/* -*- c -*- */
+
+#include &lt;stdlib.h&gt;
+
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+
+#suite Checkgen Suite
+#tcase Basic tests
+
+#test This test should fail
+ck_assert(1 == 0);
+
+#test This test should success
+ck_assert(1 == 1);
+
+#test-exit(1) Exit value == 1 is expected
+exit(1);
+
+#test-signal(SIGUSR1) Expect SIGUSR1
+kill(getpid(), SIGUSR1);
+
+#test-loop(0, 10) A loop test that success
+ck_assert(_i &gt;= 0);
+ck_assert(_i &lt; 10);
+
+#test-loop-exit(1, 0, 10) A loop test that should exit(1)
+if (_i == 5)
+	exit(0);
+exit(1);
+
+#test-loop-signal(SIGSEGV, 0, 10) Segfault !
+char *invalid = NULL;
+if (_i == 5) {
+	;			/* Noop */
+}
+invalid[0] = '@';
+
+/* Test case with unchecked fixture */
+#tcase Unckecked Fixtures
+#global Define a global for the fixture
+int *array;
+
+#setup Allocate memory for the array
+array = malloc(10 * sizeof(*array));
+if (array == NULL) {
+	/* Its an unchecked fixture, so, this ends the test
+	 * runner. But memory allocation seldom fails. */
+	exit(1);
+}
+
+#teardown Free memory used by the array
+free(array);
+
+#test An useless test
+array[0] = 20;
+ck_assert_int_eq(array[0], 20);
+
+/* Test case with checked fixture */
+#tcase Checked Fixture
+#global Its time to declare a global
+char *astring = NULL;
+
+#checked-setup A setup fixture function that fail, but tests continue
+astring[0] = '@'; 	/* Oups */
+
+#test Successful test
+ck_assert_ptr_eq(astring, NULL);
+
+/* Auxiliary directives */
+#tcase Auxiliary
+/* Set the tcase timeout to 3 seconds. */
+#timeout 1
+#test A test
+ck_assert(1 == 1);
+
+#main-post Change the main() ending
+srunner_run_all(sr, CK_ENV);
+return number;
+
+#main Change number value
+number = 0;
+
+#test Will timeout
+sleep(3);
+
+#main-pre Declare a variable
+int number = 6;
+
+#test Another test
+ck_assert(1 + 1 == 2);
+</pre><p>
+	The command
+      </p><pre class="programlisting">checkgen example.full.ts</pre><p>
+	will produce (line sync are stripped out for readability):
+      </p><pre class="programlisting">/*************************************************************/
+/*************************************************************/
+/******* Automatically generated file, DO NOT EDIT. **********/
+/*************************************************************/
+/*************************************************************/
+/* Command line used to generate this file:
+ * checkgen NOLINESYNC=1 example.full.ts 
+ */
+#include &lt;check.h&gt;
+
+/* -*- c -*- */
+
+#include &lt;stdlib.h&gt;
+
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+
+
+START_TEST(checkgen_test_func0)
+{
+ck_assert(1 == 0);
+
+}
+END_TEST
+START_TEST(checkgen_test_func1)
+{
+ck_assert(1 == 1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func2)
+{
+exit(1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func3)
+{
+kill(getpid(), SIGUSR1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func4)
+{
+ck_assert(_i &gt;= 0);
+ck_assert(_i &lt; 10);
+
+}
+END_TEST
+START_TEST(checkgen_test_func5)
+{
+if (_i == 5)
+	exit(0);
+exit(1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func6)
+{
+char *invalid = NULL;
+if (_i == 5) {
+	;			/* Noop */
+}
+invalid[0] = '@';
+
+/* Test case with unchecked fixture */
+}
+END_TEST
+/* User defined code: Define a global for the fixture */
+int *array;
+
+/* Fixture function for test case "Checkgen Suite/Unckecked Fixtures". */
+/* Allocate memory for the array */
+static void checkgen_fixture_func0()
+{
+mark_point();
+array = malloc(10 * sizeof(*array));
+if (array == NULL) {
+	/* Its an unchecked fixture, so, this ends the test
+	 * runner. But memory allocation seldom fails. */
+	exit(1);
+}
+
+}
+/* Fixture function for test case "Checkgen Suite/Unckecked Fixtures". */
+/* Free memory used by the array */
+static void checkgen_fixture_func1()
+{
+mark_point();
+free(array);
+
+}
+START_TEST(checkgen_test_func7)
+{
+array[0] = 20;
+ck_assert_int_eq(array[0], 20);
+
+/* Test case with checked fixture */
+}
+END_TEST
+/* User defined code: Its time to declare a global */
+char *astring = NULL;
+
+/* Fixture function for test case "Checkgen Suite/Checked Fixture". */
+/* A setup fixture function that fail, but tests continue */
+static void checkgen_fixture_func2()
+{
+mark_point();
+astring[0] = '@'; 	/* Oups */
+
+}
+START_TEST(checkgen_test_func8)
+{
+ck_assert_ptr_eq(astring, NULL);
+
+/* Auxiliary directives */
+}
+END_TEST
+/* Set the tcase timeout to 3 seconds. */
+START_TEST(checkgen_test_func9)
+{
+ck_assert(1 == 1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func10)
+{
+sleep(3);
+
+}
+END_TEST
+START_TEST(checkgen_test_func11)
+{
+ck_assert(1 + 1 == 2);
+}
+END_TEST
+int main(int argc, char *argv[])
+{
+Suite *s;
+TCase *tc;
+SRunner *sr;
+int nf;
+/* User code from #main-pre: Declare a variable */
+int number = 6;
+
+sr = srunner_create(NULL);
+s = suite_create("Checkgen Suite");
+srunner_add_suite(sr, s);
+tc = tcase_create("Checkgen Suite/Basic tests");
+suite_add_tcase(s, tc);
+_tcase_add_test(tc, checkgen_test_func0, "This test should fail", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func1, "This test should success", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func2, "Exit value == 1 is expected", 0, 1, 0, 1);
+_tcase_add_test(tc, checkgen_test_func3, "Expect SIGUSR1", SIGUSR1, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func4, "A loop test that success", 0, 0, 0, 10);
+_tcase_add_test(tc, checkgen_test_func5, "A loop test that should exit(1)", 0, 1, 0, 10);
+_tcase_add_test(tc, checkgen_test_func6, "Segfault !", SIGSEGV, 0, 0, 10);
+tc = tcase_create("Checkgen Suite/Unckecked Fixtures");
+suite_add_tcase(s, tc);
+tcase_add_unchecked_fixture(tc, checkgen_fixture_func0, NULL);
+tcase_add_unchecked_fixture(tc, NULL, checkgen_fixture_func1);
+_tcase_add_test(tc, checkgen_test_func7, "An useless test", 0, 0, 0, 1);
+tc = tcase_create("Checkgen Suite/Checked Fixture");
+suite_add_tcase(s, tc);
+tcase_add_checked_fixture(tc, checkgen_fixture_func2, NULL);
+_tcase_add_test(tc, checkgen_test_func8, "Successful test", 0, 0, 0, 1);
+tc = tcase_create("Checkgen Suite/Auxiliary");
+suite_add_tcase(s, tc);
+tcase_set_timeout(tc, 1);
+_tcase_add_test(tc, checkgen_test_func9, "A test", 0, 0, 0, 1);
+/* User code from #main: Change number value */
+number = 0;
+
+_tcase_add_test(tc, checkgen_test_func10, "Will timeout", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func11, "Another test", 0, 0, 0, 1);
+/* User code from #main-post: Change the main() ending */
+srunner_run_all(sr, CK_ENV);
+return number;
+
+}
+</pre></div><div class="refsect1" title="Reporting Bugs"><a id="idp165920"/><h2>Reporting Bugs</h2><p>
+	Report bugs using <a class="link" href="https://github.com/xakz/checkgen/issues">https://github.com/xakz/checkgen/issues</a>
+      </p></div><div class="refsect1" title="Thanks"><a id="idp167680"/><h2>Thanks</h2><p>
+	Thanks to the Check unit testing framework team for their work
+	(<a class="link" href="http://check.sourceforge.net/">http://check.sourceforge.net/</a>).
+      </p><p>
+	Thanks to Micah Cowan, author of <span class="emphasis"><em>checkmk</em></span>,
+	for his software and the original idea of using C-like
+	preprocessor directives.
+      </p></div></div></div></body></html>
