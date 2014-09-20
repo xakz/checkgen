@@ -1,0 +1,659 @@
+'\" t
+.\"     Title: checkgen
+.\"    Author: Maxime Chatelle <xakz@T.rxsoft.DOT.eu>
+.\" Generator: DocBook XSL-NS Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 09/20/2014
+.\"    Manual: User Commands
+.\"    Source: checkgen 1.0.0
+.\"  Language: English
+.\"
+.TH "CHECKGEN" "1" "09/20/2014" "checkgen 1.0.0" "User Commands"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+checkgen \- Test runner generator suitable for use with the Check unit testing framework (\m[blue]\fB\%http://check.sourceforge.net/\fR\m[])\&.
+.SH "SYNOPSIS"
+.HP \w'\fBcheckgen\fR\ 'u
+\fBcheckgen\fR [\fBNOLINESYNC=\fR\fB\fI1\fR\fR] \fIFILES\fR...
+.SH "DESCRIPTION"
+.PP
+
+\fBcheckgen\fR
+can generate a test runner C source file from
+\fIFILES\fR\&. This generated file is ready for compiling and then linking against the Check unit testing framework (\m[blue]\fB\%http://check.sourceforge.net/\fR\m[])\&.
+.PP
+The user can configure the file generation using a set of C\-like preprocessor directives\&. See DIRECTIVES\&.
+.PP
+Generated file contains all
+\fItest\fR
+and
+\fIfixture\fR
+function definitions followed by a generated
+\fBmain()\fR
+containing Check function calls permitting to register these test or fixture functions\&. The
+\fBmain()\fR
+also contains
+\fIsuite\fR
+or
+\fItest case\fR
+creation and registration\&. Other usefull things can also be generated using directives\&. See DIRECTIVES\&.
+.SH "OPTIONS"
+.PP
+\fBNOLINESYNC=\fR\fB\fIFLAG\fR\fR
+.RS 4
+This flag permit to disable line sync directives (#line XX "filename")\&. If
+\fIFLAG\fR
+is
+\fI1\fR, line sync are disabled\&. If
+\fIFLAG\fR
+is
+\fI0\fR, line sync are enabled (default behavior)\&.
+.sp
+The use of this option is discouraged\&. Line sync are usefull for compilator messages and/or debuggers\&. This option exists mainly to generate readable examples and testing of checkgen itself\&.
+.RE
+.SH "DIRECTIVES"
+.PP
+\fB#suite\fR \fINAME\fR
+.RS 4
+Defines a suite with the name
+\fINAME\fR
+and adds it to the SRunner\&.
+\fINAME\fR
+can be any string\&. If no suite is defined, a default one with the name "Core" will be defined for you\&.
+.RE
+.PP
+\fB#tcase\fR \fINAME\fR
+.RS 4
+Defines a test case with the name
+\fINAME\fR
+and registers it to the current TCase\&.
+\fINAME\fR
+can be any string\&. If no test case is defined, a default one with the name "Core" will be defined for you\&.
+.RE
+.PP
+\fB#test\fR \fIDESC\fR
+.RS 4
+Defines a test function block and registers it to the current test case\&. The block finishes at the next directive or at the end of file\&.
+\fIDESC\fR
+can be any string\&.
+.RE
+.PP
+\fB#test\-exit\fR(\fIEXIT_VALUE\fR) \fIDESC\fR
+.RS 4
+Same as
+\fB#test\fR, plus,
+\fIEXIT_VALUE\fR
+is the expected exit value\&.
+.RE
+.PP
+\fB#test\-signal\fR(\fISIGNUM\fR) \fIDESC\fR
+.RS 4
+Same as
+\fB#test\fR, plus,
+\fISIGNUM\fR
+is the expected signal number (You can include signal\&.h and use SIGXXX defines)\&.
+.RE
+.PP
+\fB#test\-loop\fR(\fISTART\fR, \fIEND\fR) \fIDESC\fR
+.RS 4
+Defines a loop test function block and registers it to the current test case\&. The block finishes at the next directive or at the end of file\&.
+\fIDESC\fR
+can be any string\&.
+\fISTART\fR
+and
+\fIEND\fR
+are respectively the start and end value defining the loop iterations\&. The variable
+\fI_i\fR
+is available during each iteration of the test\&.
+.RE
+.PP
+\fB#test\-loop\-exit\fR(\fIEXIT_VALUE\fR, \fISTART\fR, \fIEND\fR) \fIDESC\fR
+.RS 4
+Its the combinaison of
+\fB#test\-loop\fR
+and
+\fB#test\-exit\fR\&.
+.RE
+.PP
+\fB#test\-loop\-signal\fR(\fISIGNUM\fR, \fISTART\fR, \fIEND\fR) \fIDESC\fR
+.RS 4
+Its the combinaison of
+\fB#test\-loop\fR
+and
+\fB#test\-signal\fR\&.
+.RE
+.PP
+\fB#setup\fR \fIDESC\fR
+.RS 4
+Defines a unchecked fixture setup function block and registers it to the current test case\&. The block finishes at the next directive or at the end of file\&.
+\fIDESC\fR
+is an optional description that will appear as comment\&.
+.RE
+.PP
+\fB#teardown\fR \fIDESC\fR
+.RS 4
+Defines a unchecked fixture teardown function block and registers it to the current test case\&. The block finishes at the next directive or at the end of file\&.
+\fIDESC\fR
+is an optional description that will appear as comment\&.
+.RE
+.PP
+\fB#checked\-setup\fR \fIDESC\fR
+.RS 4
+Same as
+\fB#setup\fR
+but define a checked fixture setup function block\&.
+.RE
+.PP
+\fB#checked\-teardown\fR \fIDESC\fR
+.RS 4
+Same as
+\fB#teardown\fR
+but define a checked fixture teardown function block\&.
+.RE
+.PP
+\fB#global\fR \fIDESC\fR
+.RS 4
+Permits to close code block opened by test or fixture directive\&. So, globals can be defined after this directive\&. The optional
+\fIDESC\fR
+string will be added as comment\&.
+.RE
+.PP
+\fB#timeout\fR \fITIME\fR
+.RS 4
+Set the timeout for tests in the current test case to
+\fITIME\fR
+seconds\&.
+.RE
+.PP
+\fB#main\-pre\fR \fIDESC\fR
+.RS 4
+Defines block of code to be inserted after variable declarations in the
+\fBmain()\fR
+function\&. The optional
+\fIDESC\fR
+string will be added as comment\&. This directive can be used multiple times, block of code will be appended in order\&. The main purpose of this directive is to declare your own variables if you use a non\-C99 compiler that requires variable declarations at the top of functions\&.
+.RE
+.PP
+\fB#main\-post\fR \fIDESC\fR
+.RS 4
+Defines block of code that *replaces* the end of the
+\fBmain()\fR
+function\&. The optional
+\fIDESC\fR
+string will be added as comment\&. If you use
+\fB#main\-post\fR, the SRunner will *NOT* be run, you should provide your own piece of code to do that\&. The variable name of the SRunner is
+\fIsr\fR\&. This directive can be used multiple times, block of code will be appended in order\&.
+.RE
+.PP
+\fB#main\fR \fIDESC\fR
+.RS 4
+Defines block of code te be inserted in place in the
+\fBmain()\fR
+function\&. The current Suite variable name is
+\fIs\fR, the current TCase varaible name is
+\fItc\fR
+and the SRunner varaible name is
+\fIsr\fR\&. The optional
+\fIDESC\fR
+string will be added as comment\&. This directive can be used multiple times, block of code will be appended in order\&.
+.RE
+.SH "BASIC EXAMPLE"
+.PP
+A simple example with only some tests\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+/* \-*\- c \-*\- */
+
+#suite Checkgen
+#tcase Basics
+
+#test This test should fail
+ck_assert(1 == 0);
+
+#test This test should success
+ck_assert(1 == 1);
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+The command
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+checkgen example\&.basic\&.ts
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+will produce (line sync are stripped out for readability):
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+/*************************************************************/
+/*************************************************************/
+/******* Automatically generated file, DO NOT EDIT\&. **********/
+/*************************************************************/
+/*************************************************************/
+/* Command line used to generate this file:
+ * checkgen NOLINESYNC=1 example\&.basic\&.ts 
+ */
+#include <check\&.h>
+
+/* \-*\- c \-*\- */
+
+
+START_TEST(checkgen_test_func0)
+{
+ck_assert(1 == 0);
+
+}
+END_TEST
+START_TEST(checkgen_test_func1)
+{
+ck_assert(1 == 1);
+}
+END_TEST
+int main(int argc, char *argv[])
+{
+Suite *s;
+TCase *tc;
+SRunner *sr;
+int nf;
+sr = srunner_create(NULL);
+s = suite_create("Checkgen");
+srunner_add_suite(sr, s);
+tc = tcase_create("Checkgen/Basics");
+suite_add_tcase(s, tc);
+_tcase_add_test(tc, checkgen_test_func0, "This test should fail", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func1, "This test should success", 0, 0, 0, 1);
+srunner_run_all(sr, CK_ENV);
+nf = srunner_ntests_failed(sr);
+srunner_free(sr);
+return nf == 0 ? 0 : 1;
+}
+.fi
+.if n \{\
+.RE
+.\}
+.SH "FULL EXAMPLE"
+.PP
+An almost complete example\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+/* \-*\- c \-*\- */
+
+#include <stdlib\&.h>
+
+#include <sys/types\&.h>
+#include <unistd\&.h>
+#include <signal\&.h>
+
+#suite Checkgen Suite
+#tcase Basic tests
+
+#test This test should fail
+ck_assert(1 == 0);
+
+#test This test should success
+ck_assert(1 == 1);
+
+#test\-exit(1) Exit value == 1 is expected
+exit(1);
+
+#test\-signal(SIGUSR1) Expect SIGUSR1
+kill(getpid(), SIGUSR1);
+
+#test\-loop(0, 10) A loop test that success
+ck_assert(_i >= 0);
+ck_assert(_i < 10);
+
+#test\-loop\-exit(1, 0, 10) A loop test that should exit(1)
+if (_i == 5)
+	exit(0);
+exit(1);
+
+#test\-loop\-signal(SIGSEGV, 0, 10) Segfault !
+char *invalid = NULL;
+if (_i == 5) {
+	;			/* Noop */
+}
+invalid[0] = \*(Aq@\*(Aq;
+
+/* Test case with unchecked fixture */
+#tcase Unckecked Fixtures
+#global Define a global for the fixture
+int *array;
+
+#setup Allocate memory for the array
+array = malloc(10 * sizeof(*array));
+if (array == NULL) {
+	/* Its an unchecked fixture, so, this ends the test
+	 * runner\&. But memory allocation seldom fails\&. */
+	exit(1);
+}
+
+#teardown Free memory used by the array
+free(array);
+
+#test An useless test
+array[0] = 20;
+ck_assert_int_eq(array[0], 20);
+
+/* Test case with checked fixture */
+#tcase Checked Fixture
+#global Its time to declare a global
+char *astring = NULL;
+
+#checked\-setup A setup fixture function that fail, but tests continue
+astring[0] = \*(Aq@\*(Aq; 	/* Oups */
+
+#test Successful test
+ck_assert_ptr_eq(astring, NULL);
+
+/* Auxiliary directives */
+#tcase Auxiliary
+/* Set the tcase timeout to 3 seconds\&. */
+#timeout 1
+#test A test
+ck_assert(1 == 1);
+
+#main\-post Change the main() ending
+srunner_run_all(sr, CK_ENV);
+return number;
+
+#main Change number value
+number = 0;
+
+#test Will timeout
+sleep(3);
+
+#main\-pre Declare a variable
+int number = 6;
+
+#test Another test
+ck_assert(1 + 1 == 2);
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+The command
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+checkgen example\&.full\&.ts
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+will produce (line sync are stripped out for readability):
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+/*************************************************************/
+/*************************************************************/
+/******* Automatically generated file, DO NOT EDIT\&. **********/
+/*************************************************************/
+/*************************************************************/
+/* Command line used to generate this file:
+ * checkgen NOLINESYNC=1 example\&.full\&.ts 
+ */
+#include <check\&.h>
+
+/* \-*\- c \-*\- */
+
+#include <stdlib\&.h>
+
+#include <sys/types\&.h>
+#include <unistd\&.h>
+#include <signal\&.h>
+
+
+START_TEST(checkgen_test_func0)
+{
+ck_assert(1 == 0);
+
+}
+END_TEST
+START_TEST(checkgen_test_func1)
+{
+ck_assert(1 == 1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func2)
+{
+exit(1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func3)
+{
+kill(getpid(), SIGUSR1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func4)
+{
+ck_assert(_i >= 0);
+ck_assert(_i < 10);
+
+}
+END_TEST
+START_TEST(checkgen_test_func5)
+{
+if (_i == 5)
+	exit(0);
+exit(1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func6)
+{
+char *invalid = NULL;
+if (_i == 5) {
+	;			/* Noop */
+}
+invalid[0] = \*(Aq@\*(Aq;
+
+/* Test case with unchecked fixture */
+}
+END_TEST
+/* User defined code: Define a global for the fixture */
+int *array;
+
+/* Fixture function for test case "Checkgen Suite/Unckecked Fixtures"\&. */
+/* Allocate memory for the array */
+static void checkgen_fixture_func0()
+{
+mark_point();
+array = malloc(10 * sizeof(*array));
+if (array == NULL) {
+	/* Its an unchecked fixture, so, this ends the test
+	 * runner\&. But memory allocation seldom fails\&. */
+	exit(1);
+}
+
+}
+/* Fixture function for test case "Checkgen Suite/Unckecked Fixtures"\&. */
+/* Free memory used by the array */
+static void checkgen_fixture_func1()
+{
+mark_point();
+free(array);
+
+}
+START_TEST(checkgen_test_func7)
+{
+array[0] = 20;
+ck_assert_int_eq(array[0], 20);
+
+/* Test case with checked fixture */
+}
+END_TEST
+/* User defined code: Its time to declare a global */
+char *astring = NULL;
+
+/* Fixture function for test case "Checkgen Suite/Checked Fixture"\&. */
+/* A setup fixture function that fail, but tests continue */
+static void checkgen_fixture_func2()
+{
+mark_point();
+astring[0] = \*(Aq@\*(Aq; 	/* Oups */
+
+}
+START_TEST(checkgen_test_func8)
+{
+ck_assert_ptr_eq(astring, NULL);
+
+/* Auxiliary directives */
+}
+END_TEST
+/* Set the tcase timeout to 3 seconds\&. */
+START_TEST(checkgen_test_func9)
+{
+ck_assert(1 == 1);
+
+}
+END_TEST
+START_TEST(checkgen_test_func10)
+{
+sleep(3);
+
+}
+END_TEST
+START_TEST(checkgen_test_func11)
+{
+ck_assert(1 + 1 == 2);
+}
+END_TEST
+int main(int argc, char *argv[])
+{
+Suite *s;
+TCase *tc;
+SRunner *sr;
+int nf;
+/* User code from #main\-pre: Declare a variable */
+int number = 6;
+
+sr = srunner_create(NULL);
+s = suite_create("Checkgen Suite");
+srunner_add_suite(sr, s);
+tc = tcase_create("Checkgen Suite/Basic tests");
+suite_add_tcase(s, tc);
+_tcase_add_test(tc, checkgen_test_func0, "This test should fail", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func1, "This test should success", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func2, "Exit value == 1 is expected", 0, 1, 0, 1);
+_tcase_add_test(tc, checkgen_test_func3, "Expect SIGUSR1", SIGUSR1, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func4, "A loop test that success", 0, 0, 0, 10);
+_tcase_add_test(tc, checkgen_test_func5, "A loop test that should exit(1)", 0, 1, 0, 10);
+_tcase_add_test(tc, checkgen_test_func6, "Segfault !", SIGSEGV, 0, 0, 10);
+tc = tcase_create("Checkgen Suite/Unckecked Fixtures");
+suite_add_tcase(s, tc);
+tcase_add_unchecked_fixture(tc, checkgen_fixture_func0, NULL);
+tcase_add_unchecked_fixture(tc, NULL, checkgen_fixture_func1);
+_tcase_add_test(tc, checkgen_test_func7, "An useless test", 0, 0, 0, 1);
+tc = tcase_create("Checkgen Suite/Checked Fixture");
+suite_add_tcase(s, tc);
+tcase_add_checked_fixture(tc, checkgen_fixture_func2, NULL);
+_tcase_add_test(tc, checkgen_test_func8, "Successful test", 0, 0, 0, 1);
+tc = tcase_create("Checkgen Suite/Auxiliary");
+suite_add_tcase(s, tc);
+tcase_set_timeout(tc, 1);
+_tcase_add_test(tc, checkgen_test_func9, "A test", 0, 0, 0, 1);
+/* User code from #main: Change number value */
+number = 0;
+
+_tcase_add_test(tc, checkgen_test_func10, "Will timeout", 0, 0, 0, 1);
+_tcase_add_test(tc, checkgen_test_func11, "Another test", 0, 0, 0, 1);
+/* User code from #main\-post: Change the main() ending */
+srunner_run_all(sr, CK_ENV);
+return number;
+
+}
+.fi
+.if n \{\
+.RE
+.\}
+.SH "REPORTING BUGS"
+.PP
+Report bugs using
+\m[blue]\fB\%https://github.com/xakz/checkgen/issues\fR\m[]
+.SH "THANKS"
+.PP
+Thanks to the Check unit testing framework team for their work (\m[blue]\fB\%http://check.sourceforge.net/\fR\m[])\&.
+.PP
+Thanks to Micah Cowan, author of
+\fIcheckmk\fR, for his software and the original idea of using C\-like preprocessor directives\&.
+.SH "AUTHOR"
+.PP
+\fBMaxime Chatelle\fR <\&xakz@T\&.rxsoft\&.DOT\&.eu\&>
+.RS 4
+Original author of checkgen and associated documentation\&.
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2014 Maxime Chatelle
+.br
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software\&.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT\&. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
