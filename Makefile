@@ -57,13 +57,13 @@ EX_EXES		:= $(EXAMPLES:.ts=)
 
 all: examples
 
-install: $(PROGNAME) $(MANPAGE) $(EXAMPLES) $(EX_CLEANS) README.md COPYING
+install: $(PROGNAME) $(MANPAGE) $(HTMLMAN) $(EXAMPLES) $(EX_CLEANS) README.md COPYING
 	mkdir -p $(DESTDIR)$(bindir)
 	install -m755 -t $(DESTDIR)$(bindir) $(PROGNAME)
 	mkdir -p $(DESTDIR)$(mandir)/man$(MANSECTION)
 	install -m644 -t $(DESTDIR)$(mandir)/man$(MANSECTION) $(MANPAGE)
 	mkdir -p $(docdir)
-	install -m644 -t $(docdir) README.md COPYING
+	install -m644 -t $(docdir) README.md COPYING $(HTMLMAN)
 	mkdir -p $(exampledir)
 	install -m644 -t $(exampledir) $(EXAMPLES) $(EX_CLEANS)
 uninstall:
