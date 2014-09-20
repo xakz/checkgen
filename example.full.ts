@@ -37,7 +37,6 @@ if (_i == 5) {
 }
 invalid[0] = '@';
 
-/* Test case with unchecked fixture */
 #tcase Unckecked Fixtures
 #global Define a global for the fixture
 int *array;
@@ -57,7 +56,6 @@ free(array);
 array[0] = 20;
 ck_assert_int_eq(array[0], 20);
 
-/* Test case with checked fixture */
 #tcase Checked Fixture
 #global Its time to declare a global
 char *astring = NULL;
@@ -68,9 +66,7 @@ astring[0] = '@'; 	/* Oups */
 #test Successful test
 ck_assert_ptr_eq(astring, NULL);
 
-/* Auxiliary directives */
 #tcase Auxiliary
-/* Set the tcase timeout to 3 seconds. */
 #timeout 1
 #test A test
 ck_assert(1 == 1);
