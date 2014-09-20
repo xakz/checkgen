@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  This work is licensed under the Creative Commons
+Attribution-ShareAlike 4.0 International License. To view a copy
+of this license, visit
+http://creativecommons.org/licenses/by-sa/4.0/
+-->
+
+<article xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude"
+	 xmlns:xl="http://www.w3.org/1999/xlink"
+	 xml:lang="en"
+	 version="5.0">
+
+  <title>checkgen</title>
+
+  <refentry>
+    <info>
+      <productname>checkgen</productname>
+      <productnumber>1.0.0</productnumber>
+      <author>
+	<personname>
+	  <firstname>Maxime</firstname>
+	  <surname>Chatelle</surname>
+	  <email>xakz@T.rxsoft.DOT.eu</email>
+	</personname>
+	<contrib>
+	  Original author of checkgen and associated documentation.
+	</contrib>
+      </author>
+      <copyright>
+	<year>2014</year>
+	<holder>Maxime Chatelle</holder>
+      </copyright>
+      <legalnotice>
+	<literallayout class="monospaced"><xi:include parse="text" href="COPYING" /></literallayout>
+      </legalnotice>
+    </info>
+
+    <refmeta>
+      <refentrytitle>checkgen</refentrytitle>
+      <manvolnum>1</manvolnum>
+      <refmiscinfo class="manual">User Commands</refmiscinfo>
+    </refmeta>
+
+    <refnamediv>
+      <refname>checkgen</refname>
+      <refpurpose>
+	Test runner generator suitable for use with the Check unit
+	testing framework (<link xl:href="http://check.sourceforge.net/" />).
+      </refpurpose>
+      <refclass>UNIX/Linux</refclass>
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <cmdsynopsis>
+	<command>checkgen</command>
+	<arg choice="opt" rep="norepeat"><option>NOLINESYNC=<replaceable>1</replaceable></option></arg>
+	<arg choice="plain" rep="repeat"><replaceable>FILES</replaceable></arg>
+      </cmdsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<command>checkgen</command> can generate a test runner C
+	source file from <replaceable>FILES</replaceable>. This
+	generated file is ready for compiling and then linking against
+	the Check unit testing framework (<link xl:href="http://check.sourceforge.net/" />).
+      </para>
+      <para>
+	The user can configure the file generation using a set
+	of C-like preprocessor directives. See DIRECTIVES.
+      </para>
+      <para>
+	Generated file contains all <emphasis>test</emphasis> and
+	<emphasis>fixture</emphasis> function definitions followed by a
+	generated <function>main()</function> containing Check function
+	calls permitting to register these test or fixture
+	functions. The <function>main()</function> also contains
+	<emphasis>suite</emphasis> or <emphasis>test case</emphasis>
+	creation and registration. Other usefull things can also be
+	generated using directives. See DIRECTIVES.
+      </para>
+    </refsect1>
+
+    <refsect1>
+      <title>Options</title>
+      <variablelist>
+	<varlistentry>
+	  <term>
+	    <option>NOLINESYNC=<replaceable>FLAG</replaceable></option>
+	  </term>
+	  <listitem>
+	    <para>
+	      This flag permit to disable line sync directives (#line XX
+	      "filename"). If <replaceable>FLAG</replaceable> is
+	      <emphasis>1</emphasis>, line sync are disabled. If
+	      <replaceable>FLAG</replaceable> is <emphasis>0</emphasis>,
+	      line sync are enabled (default behavior).
+	    </para>
+	    <para>
+	      The use of this option is discouraged. Line sync are
+	      usefull for compilator messages and/or debuggers. This
+	      option exists mainly to generate readable examples and
+	      testing of checkgen itself.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </refsect1>
+
+    <refsect1>
+      <title>Directives</title>
+
+      <variablelist>
+	<varlistentry>
+	  <term>
+	    <function>#suite</function> <replaceable>NAME</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines a suite with the name
+	      <replaceable>NAME</replaceable> and adds it to the
+	      SRunner. <replaceable>NAME</replaceable> can be any
+	      string. If no suite is defined, a default one with the
+	      name "Core" will be defined for you.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#tcase</function> <replaceable>NAME</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines a test case with the name
+	      <replaceable>NAME</replaceable> and registers it to the
+	      current TCase. <replaceable>NAME</replaceable> can be any
+	      string. If no test case is defined, a default one with the
+	      name "Core" will be defined for you.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#test</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines a test function block and registers it to the
+	      current test case. The block finishes at the next
+	      directive or at the end of
+	      file. <replaceable>DESC</replaceable> can be any string.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#test-exit</function>(<replaceable class="option">EXIT_VALUE</replaceable>)
+	    <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Same as <function>#test</function>, plus,
+	      <replaceable>EXIT_VALUE</replaceable> is the expected exit
+	      value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#test-signal</function>(<replaceable>SIGNUM</replaceable>)
+	    <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Same as <function>#test</function>, plus,
+	      <replaceable>SIGNUM</replaceable> is the expected signal
+	      number (You can include signal.h and use SIGXXX defines).
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#test-loop</function>(<replaceable>START</replaceable>,
+	    <replaceable>END</replaceable>) <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines a loop test function block and registers it to
+	      the current test case. The block finishes at the next
+	      directive or at the end of
+	      file. <replaceable>DESC</replaceable> can be any
+	      string. <replaceable>START</replaceable> and
+	      <replaceable>END</replaceable> are respectively the
+	      start and end value defining the loop iterations. The
+	      variable <emphasis>_i</emphasis> is available
+	      during each iteration of the test.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#test-loop-exit</function>(<replaceable>EXIT_VALUE</replaceable>,
+	    <replaceable>START</replaceable>,
+	    <replaceable>END</replaceable>) <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Its the combinaison of <function>#test-loop</function> and
+	      <function>#test-exit</function>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#test-loop-signal</function>(<replaceable>SIGNUM</replaceable>,
+	    <replaceable>START</replaceable>,
+	    <replaceable>END</replaceable>) <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Its the combinaison of <function>#test-loop</function> and
+	      <function>#test-signal</function>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#setup</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines a unchecked fixture setup function block and
+	      registers it to the current test case. The block
+	      finishes at the next directive or at the end of
+	      file. <replaceable>DESC</replaceable> is an optional
+	      description that will appear as comment.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#teardown</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines a unchecked fixture teardown function block and
+	      registers it to the current test case. The block
+	      finishes at the next directive or at the end of
+	      file. <replaceable>DESC</replaceable> is an optional
+	      description that will appear as comment.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#checked-setup</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Same as <function>#setup</function> but define a checked
+	      fixture setup function block.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#checked-teardown</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Same as <function>#teardown</function> but define a
+	      checked fixture teardown function block.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#global</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Permits to close code block opened by test or fixture
+	      directive. So, globals can be defined after this
+	      directive. The optional <replaceable>DESC</replaceable>
+	      string will be added as comment.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#timeout</function> <replaceable>TIME</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Set the timeout for tests in the current test case to
+	      <replaceable>TIME</replaceable> seconds.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#main-pre</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines block of code to be inserted after variable
+	      declarations in the <function>main()</function>
+	      function. The optional <replaceable>DESC</replaceable>
+	      string will be added as comment. This directive can be
+	      used multiple times, block of code will be appended in
+	      order. The main purpose of this directive is to declare
+	      your own variables if you use a non-C99 compiler that
+	      requires variable declarations at the top of functions.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#main-post</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines block of code that *replaces* the end of the
+	      <function>main()</function> function. The optional
+	      <replaceable>DESC</replaceable> string will be added as
+	      comment. If you use <function>#main-post</function>, the
+	      SRunner will *NOT* be run, you should provide your own
+	      piece of code to do that. The variable name of the
+	      SRunner is <emphasis>sr</emphasis>. This directive
+	      can be used multiple times, block of code will be
+	      appended in order.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <function>#main</function> <replaceable>DESC</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      Defines block of code te be inserted in place in the
+	      <function>main()</function> function. The current Suite
+	      variable name is <emphasis>s</emphasis>, the current
+	      TCase varaible name is <emphasis>tc</emphasis> and the
+	      SRunner varaible name is <emphasis>sr</emphasis>. The
+	      optional <replaceable>DESC</replaceable> string will be
+	      added as comment. This directive can be used multiple
+	      times, block of code will be appended in order.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </refsect1>
+
+    <refsect1>
+      <title>Basic Example</title>
+
+      <para>
+	A simple example with only some tests.
+      </para>
+      <programlisting language="c" linenumbering="numbered"><xi:include parse="text" href="example.basic.ts" /></programlisting>
+      <para>
+	The command
+      </para>
+      <programlisting language="shell">checkgen example.basic.ts</programlisting>
+      <para>
+	will produce (line sync are stripped out for readability):
+      </para>
+      <programlisting language="c" linenumbering="numbered"><xi:include parse="text" href="example.basic.nolinesync.c" /></programlisting>
+
+    </refsect1>
+    <refsect1>
+      <title>Full Example</title>
+      <para>
+	An almost complete example.
+      </para>
+      <programlisting language="c" linenumbering="numbered"><xi:include parse="text" href="example.full.ts" /></programlisting>
+      <para>
+	The command
+      </para>
+      <programlisting language="shell">checkgen example.full.ts</programlisting>
+      <para>
+	will produce (line sync are stripped out for readability):
+      </para>
+      <programlisting language="c" linenumbering="numbered"><xi:include parse="text" href="example.full.nolinesync.c" /></programlisting>
+    </refsect1>
+
+    <refsect1>
+      <title>Reporting Bugs</title>
+      <para>
+	Report bugs using <link xl:href="https://github.com/xakz/checkgen/issues" />
+      </para>
+    </refsect1>
+
+    <refsect1>
+      <title>Thanks</title>
+      <para>
+	Thanks to the Check unit testing framework team for their work
+	(<link xl:href="http://check.sourceforge.net/" />).
+      </para>
+      <para>
+	Thanks to Micah Cowan, author of <emphasis>checkmk</emphasis>,
+	for his software and the original idea of using C-like
+	preprocessor directives.
+      </para>
+    </refsect1>
+
+  </refentry>
+</article>
